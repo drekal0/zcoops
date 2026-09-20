@@ -1,0 +1,19 @@
+# The dispenser worker — a long-running process that drains the claim queue and
+# sends one tx at a time. It CANNOT run on serverless (Vercel); deploy this image
+# to a persistent host (Railway / Render / Fly / a small VM).
+FROM node:20-slim
+
+WORKDIR /app
+
+# Full install (not --omit=dev): the worker runs via `tsx` and loads `dotenv`,
+# both of which are devDependencies used at runtime here.
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# tsx resolves the "@/..." path alias from tsconfig, so it must be present.
+COPY tsconfig.json ./
+COPY src ./src
+COPY db ./db
+
+# Env (TURSO_*, WALLET_BACKEND, WALLET_NETWORK, ZALLET_RPC_*) comes from the host.
+CMD ["npm", "run", "worker"]

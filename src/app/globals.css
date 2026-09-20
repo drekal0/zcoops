@@ -1,0 +1,81 @@
+:root {
+  --bg: #0f1115;
+  --panel: #171a21;
+  --panel-2: #1e222b;
+  --border: #2a2f3a;
+  --text: #e7e9ee;
+  --muted: #9aa3b2;
+  --gold: #f4b728;      /* Zcash gold */
+  --blue: #1d71b8;      /* ZecHub blue (sampled from official logo) */
+  --blue-bright: #3f9ae0; /* accessible ZecHub blue for text/links on dark */
+  --green: #4ec07a;
+  --red: #e5675a;
+  --radius: 12px;
+}
+* { box-sizing: border-box; }
+html, body { padding: 0; margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  line-height: 1.55;
+}
+a { color: var(--blue-bright); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.container { max-width: 880px; margin: 0 auto; padding: 40px 20px 80px; }
+.brand { display:flex; align-items:center; gap:10px; font-family:var(--font-serif), Georgia, serif; font-weight:400; letter-spacing:0; font-size:26px; }
+.brand .dot { width:12px; height:12px; border-radius:50%; background:var(--gold); box-shadow:0 0 0 3px rgba(29,113,184,.35), 0 0 16px var(--gold); }
+.muted { color: var(--muted); }
+.mono { font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }
+h1 { font-family:var(--font-serif), Georgia, serif; font-weight:400; font-size:46px; line-height:1.05; letter-spacing:-0.01em; margin: 26px 0 10px; }
+h2 { font-family:var(--font-serif), Georgia, serif; font-weight:400; font-size:26px; letter-spacing:0; margin: 30px 0 12px; }
+.panel { background: var(--panel); border:1px solid var(--border); border-radius: var(--radius); padding: 22px; }
+.grid { display:grid; gap:14px; }
+.stat-grid { grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); }
+.stat { background: var(--panel-2); border:1px solid var(--border); border-radius: var(--radius); padding:16px; }
+.stat .n { font-family:var(--font-serif), Georgia, serif; font-size:38px; font-weight:400; letter-spacing:0; line-height:1; }
+.stat .l { font-size: 12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); }
+label { display:block; font-size:13px; color:var(--muted); margin: 14px 0 6px; }
+input, select {
+  width:100%; padding:11px 12px; background:var(--panel-2); border:1px solid var(--border);
+  border-radius:9px; color:var(--text); font-size:15px; outline:none;
+}
+input:focus, select:focus { border-color: var(--gold); }
+button {
+  background: var(--gold); color:#1a1300; border:none; border-radius:9px; padding:12px 18px;
+  font-weight:700; font-size:15px; cursor:pointer; transition: filter .15s;
+}
+button:hover { filter: brightness(1.06); }
+button:disabled { opacity:.5; cursor:not-allowed; }
+button.ghost { background: transparent; color: var(--text); border:1px solid var(--border); }
+.row { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+.pill { font-size:12px; padding:3px 10px; border-radius:999px; border:1px solid var(--border); color:var(--muted); }
+.pill.green { color:var(--green); border-color:rgba(78,192,122,.4); }
+.pill.gold { color:var(--gold); border-color:rgba(244,183,40,.4); }
+.pill.blue { color:var(--blue-bright); border-color:rgba(29,113,184,.5); }
+.bar { height:10px; background:var(--panel-2); border-radius:999px; overflow:hidden; border:1px solid var(--border); }
+.bar > i { display:block; height:100%; background:linear-gradient(90deg,var(--gold),var(--blue)); }
+.notice { padding:11px 14px; border-radius:9px; font-size:14px; }
+.notice.err { background:rgba(229,103,90,.12); border:1px solid rgba(229,103,90,.4); color:#f2b3ab; }
+.notice.ok  { background:rgba(78,192,122,.12); border:1px solid rgba(78,192,122,.4); color:#a9e6c1; }
+table { width:100%; border-collapse: collapse; font-size:13px; }
+th, td { text-align:left; padding:8px 6px; border-bottom:1px solid var(--border); }
+th { color:var(--muted); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.06em; }
+.codes { display:grid; grid-template-columns: repeat(auto-fill, minmax(120px,1fr)); gap:8px; margin-top:12px; }
+.code { background:var(--panel-2); border:1px dashed var(--border); border-radius:8px; padding:10px; text-align:center; font-family:var(--font-mono),ui-monospace,monospace; letter-spacing:.1em; }
+
+/* Ecosystem footer — Zcash gold + ZecHub blue */
+.eco { margin-top:56px; padding-top:18px; border-top:1px solid var(--border); display:flex; gap:10px; align-items:center; font-size:12px; color:var(--muted); }
+.eco .swatch { width:10px; height:10px; border-radius:50%; display:inline-block; }
+.eco .g { background:var(--gold); }
+.eco .b { background:var(--blue); }
+
+/* QR redemption sheet (booth handouts) */
+.qrsheet { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:14px; margin-top:14px; }
+.qrcard { background:#fff; border:1px solid var(--border); border-radius:12px; padding:14px 10px; text-align:center; }
+.qrcard .code { color:#0f1115; background:#fff; border:1px dashed #cfd4dd; }
+@media print {
+  body { background:#fff; }
+  nav, .eco, footer, .bar, button, .notice { display:none !important; }
+  .qrcard { break-inside:avoid; }
+}

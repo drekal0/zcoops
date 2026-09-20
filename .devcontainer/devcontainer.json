@@ -1,0 +1,14 @@
+{
+  "name": "zcoops",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
+  "postCreateCommand": "npm install && cp -n .env.example .env || true",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": { "label": "web (next dev)" }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
+    }
+  }
+}
