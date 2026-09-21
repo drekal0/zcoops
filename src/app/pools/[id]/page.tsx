@@ -97,6 +97,14 @@ export default function ClaimPage({ params }: { params: { id: string } }) {
         <div className="notice ok" style={{ marginTop: 18 }}>
           Sent! txid: <span className="mono">{txid}</span>
         </div>
+      ) : pool.status !== "active" ? (
+        <div className="notice" style={{ marginTop: 18 }}>
+          {pool.status === "provision_failed"
+            ? "This pool failed to set up. Please contact the organizer."
+            : String(pool.status).startsWith("provision")
+            ? "This pool is being set up — check back in a moment."
+            : "This pool isn't active right now."}
+        </div>
       ) : stats?.remaining === 0 ? (
         <div className="notice err" style={{ marginTop: 18 }}>This pool is fully claimed.</div>
       ) : (

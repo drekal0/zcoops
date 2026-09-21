@@ -64,6 +64,22 @@ export default function AdminDashboard({ params }: { params: { id: string } }) {
         {stats.failed > 0 && <div className="stat"><div className="n" style={{ color: "var(--red)" }}>{stats.failed}</div><div className="l">Failed</div></div>}
       </div>
 
+      <h2>Funding</h2>
+      <div className="panel">
+        {pool.status === "active" && data.deposit_address ? (
+          <>
+            <p className="muted mono" style={{ marginTop: 0 }}>Send ZEC to this address to fund the pool:</p>
+            <div className="code" style={{ textAlign: "left", wordBreak: "break-all" }}>{data.deposit_address}</div>
+          </>
+        ) : pool.status === "provision_failed" ? (
+          <div className="notice err" style={{ margin: 0 }}>
+            Provisioning failed{data.provision_error ? `: ${data.provision_error}` : ""}. Check the worker and wallet backend.
+          </div>
+        ) : (
+          <p className="muted" style={{ margin: 0 }}>Provisioning the deposit address… this updates automatically once the worker picks it up.</p>
+        )}
+      </div>
+
       {codeStats && (
         <>
           <h2>Claim codes</h2>

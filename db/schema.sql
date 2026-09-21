@@ -6,13 +6,14 @@ CREATE TABLE IF NOT EXISTS pools (
   owner             TEXT NOT NULL,              -- organizer handle/email (MVP)
   kind              TEXT NOT NULL DEFAULT 'distribution', -- distribution (claim pool) | collection (crowdfund, M4)
   network           TEXT NOT NULL,              -- regtest | testnet | mainnet
-  deposit_address   TEXT NOT NULL,              -- per-pool deposit UA (its account's address)
+  deposit_address   TEXT,                        -- per-pool deposit UA, NULL until the worker provisions it
   wallet_ref        TEXT,                        -- opaque backend handle (Zallet account id)
+  provision_error   TEXT,                        -- set if worker provisioning fails
   amount_per_claim  TEXT NOT NULL,              -- ZEC, stored as string to avoid float drift
   max_claims        INTEGER NOT NULL,
   cooldown_seconds  INTEGER NOT NULL DEFAULT 0, -- per-claimant cooldown, public mode
   claim_mode        TEXT NOT NULL DEFAULT 'public', -- public | code
-  status            TEXT NOT NULL DEFAULT 'active', -- active | paused | closed
+  status            TEXT NOT NULL DEFAULT 'provisioning', -- provisioning | provisioning_inflight | active | paused | closed | provision_failed
   expires_at        INTEGER,                    -- unix seconds, nullable
   created_at        INTEGER NOT NULL
 );

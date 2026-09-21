@@ -26,6 +26,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   if (isAdmin(req)) {
     body.recent = await recentClaims(pool.id, 25);
     body.deposit_address = pool.deposit_address;
+    body.provision_error = pool.provision_error;
   }
   return NextResponse.json(body);
 }

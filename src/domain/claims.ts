@@ -26,7 +26,15 @@ export type ClaimErr = { ok: false; reason: string };
 export async function enqueueClaim(input: ClaimInput): Promise<ClaimOk | ClaimErr> {
   const pool = await getPool(input.poolId);
   if (!pool) return { ok: false, reason: "Pool not found." };
-  if (pool.status !== "active") return { ok: false, reason: "This pool is not active." };
+  if (pool.status !== "active") {
+    const reason =
+      pool.status === "provisioning" || pool.status === "provisioning_inflight"
+        ? "This pool is still being set up — check back in a moment."
+        : pool.status === "provision_failed"
+        ? "This pool failed to set up."
+        : "This pool is not active.";
+    return { ok: false, reason };
+  }
   if (pool.expires_at && now() > pool.expires_at)
     return { ok: false, reason: "This pool has expired." };
 

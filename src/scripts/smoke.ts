@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { createPool } from "@/domain/pools";
 import { generateCodes } from "@/domain/codes";
 import { enqueueClaim, poolStats, getClaim } from "@/domain/claims";
+import { provisionPool } from "@/domain/pools";
 import { wallet } from "@/wallet";
 import { mintClaim } from "./mint-address";
 
@@ -27,7 +28,9 @@ async function drainOnce(): Promise<boolean> {
 (async () => {
   await initDb();
   const pool = await createPool({ name: "Smoke Test Pool", owner: "tester", amountPerClaim: "0.01", maxClaims: 3, claimMode: "code" });
-  console.log("✓ pool created:", pool.id, "deposit:", pool.deposit_address);
+  console.log("✓ pool created (provisioning):", pool.id);
+  await provisionPool(pool.id);
+  console.log("✓ pool provisioned -> active");
 
   const codes = await generateCodes(pool.id, 3);
   console.log("✓ codes generated:", codes.join(", "));

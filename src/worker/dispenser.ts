@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { db, now } from "@/lib/db";
 import { wallet } from "@/wallet";
+import { provisionPool, nextProvisioningPoolId } from "@/domain/pools";
 
 /**
  * Dispenser worker — the single most important piece of the backend.
@@ -18,6 +19,15 @@ import { wallet } from "@/wallet";
 
 const POLL_MS = 1500;
 let running = true;
+
+async function provisionNext(): Promise<boolean> {
+  const poolId = await nextProvisioningPoolId();
+  if (!poolId) return false;
+  const res = await provisionPool(poolId);
+  if (res.ok) console.log(`[dispenser] provisioned pool ${poolId}`);
+  else console.error(`[dispenser] provision FAILED ${poolId}: ${res.error}`);
+  return true;
+}
 
 async function claimNext() {
   const client = db();
@@ -70,7 +80,10 @@ async function loop() {
   while (running) {
     let worked = false;
     try {
-      worked = await claimNext();
+      // Provision new pools first so they become claimable quickly, then send.
+      const provisioned = await provisionNext();
+      const claimed = await claimNext();
+      worked = provisioned || claimed;
     } catch (e) {
       console.error("[dispenser] loop error:", e);
     }
@@ -84,6 +97,7 @@ process.on("SIGTERM", () => { running = false; });
 // Recover any 'sending' rows orphaned by a crash back to 'queued' at startup.
 (async () => {
   await db().execute(`UPDATE claims SET status='queued' WHERE status='sending'`);
+  await db().execute(`UPDATE pools SET status='provisioning' WHERE status='provisioning_inflight'`);
   await loop();
   process.exit(0);
 })();
