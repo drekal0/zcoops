@@ -6,3 +6,6 @@ node_modules
 *.db-*
 local.db
 .DS_Store
+
+next-env.d.ts
+tsconfig.tsbuildinfo
