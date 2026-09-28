@@ -1,3 +1,9 @@
+#!/usr/bin/env bash
+# zcoops — apply the polished landing as the app home. Run from repo root: bash apply-landing.sh
+set -e; cd "$(dirname "$0")"
+if [ ! -f package.json ]; then echo "run from zcoops repo root"; exit 1; fi
+mkdir -p src/app
+cat > "src/app/page.tsx" << 'ZC_4362171a'
 // Home / landing page — the zcoops marketing landing, served at "/".
 // Ported from the design system landing; full-bleed (root layout adds no chrome).
 const CSS = ":root{\n    --bg:#0f1115; --panel:#171a21; --panel-2:#1e222b; --border:#2a2f3a;\n    --text:#e7e9ee; --muted:#9aa3b2;\n    --gold:#f4b728;               /* Zcash */\n    --blue:#1d71b8;               /* ZecHub */\n    --blue-bright:#3f9ae0;\n    --green:#4ec07a;\n    --serif:'Instrument Serif',Georgia,'Times New Roman',serif;\n    --sans:'Inter',ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;\n    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;\n    --radius:14px;\n  }\n  *{box-sizing:border-box}\n  html{color-scheme:dark}\n  body{\n    margin:0; background:var(--bg); color:var(--text); font-family:var(--sans);\n    line-height:1.6; -webkit-font-smoothing:antialiased;\n    background-image:\n      radial-gradient(60% 50% at 78% -5%, rgba(29,113,184,.16), transparent 60%),\n      radial-gradient(55% 45% at 8% 0%, rgba(244,183,40,.12), transparent 55%);\n    background-repeat:no-repeat;\n  }\n  a{color:var(--blue-bright); text-decoration:none}\n  a:hover{text-decoration:underline}\n  .wrap{max-width:1080px; margin:0 auto; padding:0 22px}\n  .mono{font-family:var(--mono)}\n  .muted{color:var(--muted)}\n\n  /* nav */\n  nav{display:flex; align-items:center; justify-content:space-between; padding:22px 0}\n  .brand{display:flex; align-items:center; gap:11px; font-family:var(--serif); font-size:27px; letter-spacing:0}\n  .dot{width:13px; height:13px; border-radius:50%; background:var(--gold);\n       box-shadow:0 0 0 3px rgba(29,113,184,.35), 0 0 18px var(--gold)}\n  .nav-links{display:flex; align-items:center; gap:26px; font-size:14px}\n  .nav-links a{color:var(--muted)}\n  .nav-links a:hover{color:var(--text); text-decoration:none}\n  .btn{display:inline-flex; align-items:center; gap:8px; font-family:var(--sans); font-weight:600;\n       font-size:15px; padding:11px 18px; border-radius:10px; cursor:pointer; border:1px solid transparent; transition:filter .15s, border-color .15s}\n  .btn.primary{background:var(--gold); color:#1a1300}\n  .btn.primary:hover{filter:brightness(1.07); text-decoration:none}\n  .btn.ghost{background:transparent; color:var(--text); border-color:var(--border)}\n  .btn.ghost:hover{border-color:var(--blue-bright); text-decoration:none}\n  .btn.blue{background:var(--blue); color:#fff}\n  .btn.blue:hover{filter:brightness(1.1); text-decoration:none}\n\n  /* wallet prompt */\n  .wallet-cta{display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;\n    background:linear-gradient(90deg, rgba(29,113,184,.10), rgba(244,183,40,.06));\n    border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; margin-top:8px}\n  .wallet-cta .wt{font-family:var(--serif); font-size:22px; line-height:1.15}\n  .wallet-cta .ws{font-size:14.5px; color:var(--muted); margin-top:3px; max-width:44em}\n  .wallet-cta .badge{font-family:var(--mono); font-size:11px; color:var(--blue-bright);\n    border:1px solid rgba(29,113,184,.5); border-radius:999px; padding:3px 9px; margin-left:8px; vertical-align:middle}\n\n  /* hero */\n  .hero{display:grid; grid-template-columns:1.05fr .95fr; gap:48px; align-items:center; padding:56px 0 40px}\n  .tag{display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:12px;\n       color:var(--muted); border:1px solid var(--border); border-radius:999px; padding:5px 12px; margin-bottom:22px}\n  .tag .g{width:8px;height:8px;border-radius:50%;background:var(--gold);display:inline-block}\n  .tag .b{width:8px;height:8px;border-radius:50%;background:var(--blue);display:inline-block}\n  h1{font-family:var(--serif); font-weight:400; font-size:60px; line-height:1.02; letter-spacing:-.015em; margin:0 0 18px}\n  h1 .accent{color:var(--gold)}\n  .sub{font-size:18px; color:#c3c9d4; max-width:30em; margin:0 0 28px}\n  .cta-row{display:flex; gap:12px; flex-wrap:wrap; align-items:center}\n  .cta-note{font-family:var(--mono); font-size:12px; color:var(--muted); margin-left:2px}\n\n  /* product mock */\n  .mock{background:linear-gradient(180deg,var(--panel),#12151c); border:1px solid var(--border);\n        border-radius:18px; padding:20px; box-shadow:0 30px 70px -30px rgba(0,0,0,.7)}\n  .mock .head{display:flex; justify-content:space-between; align-items:flex-start; gap:12px}\n  .mock h3{font-family:var(--serif); font-weight:400; font-size:22px; margin:2px 0 2px}\n  .pill{font-family:var(--mono); font-size:11px; padding:3px 10px; border-radius:999px; border:1px solid var(--border); color:var(--muted); white-space:nowrap}\n  .pill.blue{color:var(--blue-bright); border-color:rgba(29,113,184,.5)}\n  .pill.green{color:var(--green); border-color:rgba(78,192,122,.4)}\n  .bar{height:10px; background:var(--panel-2); border:1px solid var(--border); border-radius:999px; overflow:hidden; margin:16px 0 8px}\n  .bar > i{display:block; height:100%; width:93%; background:linear-gradient(90deg,var(--gold),var(--blue))}\n  .barlabel{font-family:var(--mono); font-size:12px; color:var(--muted)}\n  .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:16px}\n  .stat{background:var(--panel-2); border:1px solid var(--border); border-radius:11px; padding:12px}\n  .stat .n{font-family:var(--serif); font-size:30px; line-height:1}\n  .stat .l{font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.09em; color:var(--muted); margin-top:5px}\n  .codes{display:flex; gap:8px; margin-top:14px; flex-wrap:wrap}\n  .code{font-family:var(--mono); font-size:13px; letter-spacing:.12em; background:var(--panel-2);\n        border:1px dashed var(--border); border-radius:8px; padding:8px 12px}\n\n  /* sections */\n  section{padding:52px 0}\n  .kicker{font-family:var(--mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--blue-bright); margin:0 0 10px}\n  h2{font-family:var(--serif); font-weight:400; font-size:38px; line-height:1.08; letter-spacing:-.01em; margin:0 0 10px}\n  .lead{color:var(--muted); max-width:40em; margin:0 0 26px; font-size:16px}\n\n  .steps{display:grid; grid-template-columns:repeat(4,1fr); gap:16px}\n  .step{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:20px}\n  .step .num{font-family:var(--mono); font-size:12px; color:var(--gold); border:1px solid rgba(244,183,40,.4);\n             width:26px; height:26px; display:flex; align-items:center; justify-content:center; border-radius:50%; margin-bottom:14px}\n  .step h4{font-size:16px; margin:0 0 6px; font-weight:600}\n  .step p{font-size:14px; color:var(--muted); margin:0}\n\n  .features{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}\n  .feat{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:22px; position:relative; overflow:hidden}\n  .feat::before{content:\"\"; position:absolute; inset:0 0 auto 0; height:2px; background:linear-gradient(90deg,var(--gold),var(--blue)); opacity:.55}\n  .feat h4{font-size:17px; margin:6px 0 8px; font-weight:600}\n  .feat p{font-size:14.5px; color:var(--muted); margin:0}\n  .feat .ic{font-size:20px}\n\n  .who{display:flex; gap:10px; flex-wrap:wrap; margin-top:6px}\n  .who span{font-family:var(--mono); font-size:13px; color:var(--text); background:var(--panel);\n            border:1px solid var(--border); border-radius:999px; padding:8px 15px}\n\n  .next{background:linear-gradient(180deg,var(--panel),#12151c); border:1px solid var(--border);\n        border-radius:18px; padding:30px; display:grid; grid-template-columns:auto 1fr; gap:22px; align-items:center}\n  .next .badge{font-family:var(--mono); font-size:12px; color:var(--blue-bright); border:1px solid rgba(29,113,184,.5);\n               border-radius:999px; padding:6px 12px; white-space:nowrap}\n  .next h3{font-family:var(--serif); font-weight:400; font-size:26px; margin:0 0 6px}\n  .next p{margin:0; color:var(--muted); font-size:15px; max-width:52em}\n\n  .cta-band{text-align:center; padding:64px 0 28px}\n  .cta-band h2{font-size:44px; margin-bottom:14px}\n  .cta-band .sub{margin:0 auto 26px}\n\n  footer{border-top:1px solid var(--border); padding:26px 0 60px; margin-top:20px;\n         display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px}\n  .eco{display:flex; align-items:center; gap:9px; font-size:12.5px; color:var(--muted)}\n  .eco .s{width:10px; height:10px; border-radius:50%; display:inline-block}\n  .eco .s.g{background:var(--gold)} .eco .s.b{background:var(--blue)}\n  .foot-links{display:flex; gap:20px; font-size:13px}\n  .foot-links a{color:var(--muted)}\n\n  @media (max-width:860px){\n    .hero{grid-template-columns:1fr; gap:34px; padding:36px 0}\n    h1{font-size:46px}\n    .steps{grid-template-columns:repeat(2,1fr)}\n    .features{grid-template-columns:1fr}\n    .next{grid-template-columns:1fr; text-align:left}\n    .cta-band h2{font-size:34px}\n  }\n  @media (max-width:480px){\n    .steps{grid-template-columns:1fr}\n    .nav-links .l{display:none}\n    h1{font-size:39px}\n  }";
@@ -11,3 +17,62 @@ export default function Home() {
     </>
   );
 }
+ZC_4362171a
+echo '  wrote src/app/page.tsx'
+mkdir -p src/app
+cat > "src/app/layout.tsx" << 'ZC_6d3fd99d'
+import "./globals.css";
+import type { Metadata } from "next";
+import { Instrument_Serif, Inter, JetBrains_Mono } from "next/font/google";
+import AppChrome from "./_chrome";
+
+// Same type system as Zcash Builders: Instrument Serif (display) + Inter (UI)
+// + JetBrains Mono (data/addresses), on the gold/dark scheme.
+const serif = Instrument_Serif({ weight: "400", subsets: ["latin"], variable: "--font-serif", display: "swap" });
+const sans = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
+const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" });
+
+export const metadata: Metadata = {
+  title: "zcoops — Zcash community claim pools",
+  description: "Create a funded pool for your event and watch people claim, in real time.",
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en" className={`${serif.variable} ${sans.variable} ${mono.variable}`}>
+      <body>
+        <AppChrome>{children}</AppChrome>
+      </body>
+    </html>
+  );
+}
+ZC_6d3fd99d
+echo '  wrote src/app/layout.tsx'
+mkdir -p src/app
+cat > "src/app/_chrome.tsx" << 'ZC_6420ff91'
+"use client";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+// The landing ("/") is full-bleed with its own nav/footer. Every other route
+// gets the app container + top bar + ecosystem footer.
+export default function AppChrome({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  if (pathname === "/") return <>{children}</>;
+  return (
+    <div className="container">
+      <div className="row" style={{ justifyContent: "space-between" }}>
+        <Link href="/" className="brand"><span className="dot" />zcoops</Link>
+        <Link href="/create" className="mono muted">+ new pool</Link>
+      </div>
+      {children}
+      <footer className="eco">
+        <span className="swatch g" /><span className="swatch b" />
+        <span>Part of the Zcash ecosystem · aligned with ZecHub brand guidelines</span>
+      </footer>
+    </div>
+  );
+}
+ZC_6420ff91
+echo '  wrote src/app/_chrome.tsx'
+echo "Landing applied. Commit & push to deploy."
