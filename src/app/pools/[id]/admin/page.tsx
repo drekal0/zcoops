@@ -3,29 +3,36 @@ import { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 
 export default function AdminDashboard({ params }: { params: { id: string } }) {
-  const [token, setToken] = useState("");
+  const [key, setKey] = useState("");
+  const [keyInput, setKeyInput] = useState("");
   const [data, setData] = useState<any>(null);
   const [count, setCount] = useState("50");
   const [codes, setCodes] = useState<string[] | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
+  // Pick up the manage key from the URL (?key=...) — the create flow lands here
+  // with it, and the manage link is what you share with co-organizers.
+  useEffect(() => {
+    const k = new URLSearchParams(window.location.search).get("key");
+    if (k) setKey(k);
+  }, []);
+
   async function load() {
-    const r = await fetch(`/api/pools/${params.id}/stats`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    });
+    if (!key) return;
+    const r = await fetch(`/api/pools/${params.id}/stats?key=${encodeURIComponent(key)}`);
     if (r.ok) setData(await r.json());
   }
   useEffect(() => {
     load();
     const t = setInterval(load, 4000); // live-ish dashboard
     return () => clearInterval(t);
-  }, [token]);
+  }, [key]);
 
   async function genCodes() {
     setErr(null); setCodes(null);
     const r = await fetch(`/api/pools/${params.id}/codes`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      headers: { "Content-Type": "application/json", "x-manage-key": key },
       body: JSON.stringify({ count: Number(count) }),
     });
     const d = await r.json();
@@ -33,19 +40,34 @@ export default function AdminDashboard({ params }: { params: { id: string } }) {
     setCodes(d.codes);
   }
 
-  if (!data) return (
-    <main>
-      <h1>Pool dashboard</h1>
-      <div className="panel">
-        <label>Admin token</label>
-        <input placeholder="ADMIN_TOKEN from your .env" value={token} onChange={(e) => setToken(e.target.value)} />
-        <p className="muted mono" style={{ marginTop: 8 }}>Enter the token to unlock the full feed.</p>
-      </div>
-    </main>
-  );
+  // No key yet, or the key didn't unlock the manager view: ask for it.
+  if (!key || (data && !data.recent && !data.deposit_address)) {
+    return (
+      <main>
+        <h1>Manage pool</h1>
+        <div className="panel">
+          <label>Manage key</label>
+          <input placeholder="Paste your manage key" value={keyInput} onChange={(e) => setKeyInput(e.target.value)} />
+          <p className="muted mono" style={{ marginTop: 8 }}>
+            You got this when you created the pool. Or open your manage link directly.
+          </p>
+          <div style={{ marginTop: 12 }}>
+            <button onClick={() => { setData(null); setKey(keyInput.trim()); }}>Unlock</button>
+          </div>
+          {key && data && !data.recent && (
+            <div className="notice err" style={{ marginTop: 14 }}>That key doesn&apos;t manage this pool.</div>
+          )}
+        </div>
+      </main>
+    );
+  }
+
+  if (!data) return <main><p className="muted">Loading pool…</p></main>;
 
   const { pool, stats, codes: codeStats, recent } = data;
-  const claimUrl = typeof window !== "undefined" ? `${window.location.origin}/pools/${pool.id}` : "";
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
+  const claimUrl = `${origin}/pools/${pool.id}`;
+  const manageUrl = `${origin}/pools/${pool.id}/admin?key=${encodeURIComponent(key)}`;
 
   return (
     <main>
@@ -53,7 +75,18 @@ export default function AdminDashboard({ params }: { params: { id: string } }) {
         <h1 style={{ marginBottom: 0 }}>{pool.name}</h1>
         <span className={`pill ${pool.status === "active" ? "green" : ""}`}>{pool.status} · {pool.network}</span>
       </div>
-      <p className="muted mono">Claim link: <a href={`/pools/${pool.id}`}>{claimUrl}</a></p>
+
+      <h2>Links</h2>
+      <div className="panel grid" style={{ gap: 12 }}>
+        <div>
+          <div className="l" style={{ fontSize: 12, color: "var(--muted)", textTransform: "uppercase", letterSpacing: ".08em" }}>Claim link — share with claimants</div>
+          <a className="mono" href={`/pools/${pool.id}`} style={{ wordBreak: "break-all" }}>{claimUrl}</a>
+        </div>
+        <div>
+          <div className="l" style={{ fontSize: 12, color: "var(--muted)", textTransform: "uppercase", letterSpacing: ".08em" }}>Manage link — keep secret; share only with co-organizers</div>
+          <div className="mono" style={{ wordBreak: "break-all", color: "var(--gold)" }}>{manageUrl}</div>
+        </div>
+      </div>
 
       <div className="grid stat-grid" style={{ marginTop: 18 }}>
         <div className="stat"><div className="n">{stats.claimed}</div><div className="l">Claimed</div></div>
@@ -99,14 +132,7 @@ export default function AdminDashboard({ params }: { params: { id: string } }) {
                 <div className="qrsheet">
                   {codes.map((c) => (
                     <div className="qrcard" key={c}>
-                      <QRCodeSVG
-                        value={`${claimUrl}?code=${c}`}
-                        size={116}
-                        bgColor="#ffffff"
-                        fgColor="#0f1115"
-                        level="M"
-                        includeMargin
-                      />
+                      <QRCodeSVG value={`${claimUrl}?code=${c}`} size={116} bgColor="#ffffff" fgColor="#0f1115" level="M" includeMargin />
                       <div className="code" style={{ marginTop: 8 }}>{c}</div>
                     </div>
                   ))}

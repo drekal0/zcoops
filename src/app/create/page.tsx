@@ -20,7 +20,7 @@ export default function CreatePool() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to create pool");
-      router.push(`/pools/${data.pool.id}/admin`);
+      router.push(`/pools/${data.pool.id}/admin?key=${encodeURIComponent(data.pool.manage_key)}`);
     } catch (e: any) { setErr(e.message); } finally { setBusy(false); }
   }
 

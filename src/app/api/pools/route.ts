@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createPool, listPools } from "@/domain/pools";
+import { createPool, listPools, toPublicPool } from "@/domain/pools";
 
 export async function GET() {
-  const pools = await listPools();
+  const pools = (await listPools()).map(toPublicPool);
   return NextResponse.json({ pools });
 }
 

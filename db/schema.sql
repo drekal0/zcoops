@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS pools (
   cooldown_seconds  INTEGER NOT NULL DEFAULT 0, -- per-claimant cooldown, public mode
   claim_mode        TEXT NOT NULL DEFAULT 'public', -- public | code
   status            TEXT NOT NULL DEFAULT 'provisioning', -- provisioning | provisioning_inflight | active | paused | closed | provision_failed
+  manage_key        TEXT,                        -- secret per-pool key, whoever holds it can manage this pool
   expires_at        INTEGER,                    -- unix seconds, nullable
   created_at        INTEGER NOT NULL
 );

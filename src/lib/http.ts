@@ -7,6 +7,10 @@ export function clientIp(req: NextRequest): string {
   return req.headers.get("x-real-ip") || "0.0.0.0";
 }
 
+export function manageKeyFromReq(req: NextRequest): string {
+  return req.nextUrl.searchParams.get("key") || req.headers.get("x-manage-key") || "";
+}
+
 export function isAdmin(req: NextRequest): boolean {
   const header = req.headers.get("authorization") || "";
   const token = header.replace(/^Bearer\s+/i, "");

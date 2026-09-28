@@ -1,5 +1,6 @@
 import { db, now } from "@/lib/db";
-import { newId } from "@/lib/ids";
+import { timingSafeEqual } from "crypto";
+import { newId, newManageKey } from "@/lib/ids";
 import { wallet } from "@/wallet";
 import { config } from "@/lib/config";
 
@@ -25,6 +26,7 @@ export interface Pool {
   cooldown_seconds: number;
   claim_mode: "public" | "code";
   status: PoolStatus;
+  manage_key: string;
   expires_at: number | null;
   created_at: number;
 }
@@ -61,17 +63,18 @@ export async function createPool(input: CreatePoolInput): Promise<Pool> {
     cooldown_seconds: input.cooldownSeconds ?? 0,
     claim_mode: input.claimMode ?? "public",
     status: "provisioning",
+    manage_key: newManageKey(),
     expires_at: input.expiresAt ?? null,
     created_at: now(),
   };
   await db().execute({
     sql: `INSERT INTO pools
-      (id,name,owner,kind,network,deposit_address,wallet_ref,amount_per_claim,max_claims,cooldown_seconds,claim_mode,status,expires_at,created_at)
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+      (id,name,owner,kind,network,deposit_address,wallet_ref,amount_per_claim,max_claims,cooldown_seconds,claim_mode,status,manage_key,expires_at,created_at)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     args: [
       pool.id, pool.name, pool.owner, pool.kind, pool.network, pool.deposit_address, pool.wallet_ref,
       pool.amount_per_claim, pool.max_claims, pool.cooldown_seconds,
-      pool.claim_mode, pool.status, pool.expires_at, pool.created_at,
+      pool.claim_mode, pool.status, pool.manage_key, pool.expires_at, pool.created_at,
     ],
   });
   return pool;
@@ -123,4 +126,32 @@ export async function provisionPool(poolId: string): Promise<{ ok: boolean; erro
     });
     return { ok: false, error: String(e?.message ?? e) };
   }
+}
+
+
+/** Constant-time check that `key` manages `poolId`. */
+export async function verifyManageKey(poolId: string, key: string): Promise<boolean> {
+  if (!key) return false;
+  const r = await db().execute({ sql: `SELECT manage_key FROM pools WHERE id = ?`, args: [poolId] });
+  const mk = (r.rows[0] as any)?.manage_key as string | undefined;
+  if (!mk) return false;
+  const a = Buffer.from(mk);
+  const b = Buffer.from(key);
+  return a.length === b.length && timingSafeEqual(a, b);
+}
+
+/** Whitelist of fields safe to expose publicly (drops manage_key, deposit_address, owner, etc.). */
+export function toPublicPool(p: Pool) {
+  return {
+    id: p.id,
+    name: p.name,
+    network: p.network,
+    kind: p.kind,
+    amount_per_claim: p.amount_per_claim,
+    max_claims: p.max_claims,
+    claim_mode: p.claim_mode,
+    status: p.status,
+    expires_at: p.expires_at,
+    created_at: p.created_at,
+  };
 }
